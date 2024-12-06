@@ -2,21 +2,6 @@ import time
 import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import scrapy
-
-class DivannewparsSpider(scrapy.Spider):
-    name = "divannewpars"
-    allowed_domains = ["https://divan.ru"]
-    start_urls = ["https://www.divan.ru/ekaterinburg/category/svet"]
-
-    def parse(self, response):
-        svetis = response.css('div.LlPhw')
-        for svet in svetis:
-            yield {
-                'name': svet.css('div.lsooF span::text').get(),
-                'price': svet.css('div.q5Uds span::text').get(),
-                'url': svet.css('a').attrib['href']
-            }
 
 driver = webdriver.Firefox()
 
@@ -48,7 +33,3 @@ with open('hh.csv', 'w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
     writer.writerow(['Название вакансии', 'Название компании', 'Зарплата', 'Ссылка на вакансию'])
     writer.writerows(parsed_data)
-
-
-
-
