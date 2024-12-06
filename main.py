@@ -2,53 +2,30 @@ import time
 import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import scrapy
-
-class DivannewparsSpider(scrapy.Spider):
-    name = "divannewpars"
-    allowed_domains = ["https://divan.ru"]
-    start_urls = ["https://www.divan.ru/ekaterinburg/category/svet"]
-
-    def parse(self, response):
-        svetis = response.css('div.LlPhw')
-        for svet in svetis:
-            yield {
-                'name': svet.css('div.lsooF span::text').get(),
-                'price': svet.css('div.q5Uds span::text').get(),
-                'url': svet.css('a').attrib['href']
-            }
 
 driver = webdriver.Firefox()
 
-url = 'https://tomsk.hh.ru/vacancies/programmist'
+url = 'https://www.divan.ru/ekaterinburg/category/svet'
 driver.get(url)
 time.sleep(3)
 
-vacas = driver.find_elements(By.CLASS_NAME, 'vacancy-info--ieHKDTkezpEj0Gsx')
 parsed_data = []
 
-for vac in vacas:
+svetis = driver.find_elements(By.CLASS_NAME, 'div.LlPhw')
+
+for svet in svetis:
     try:
-        title_element = vac.find_element(By.CSS_SELECTOR, 'a.magritte-link___b4rEM_4-3-12')
-        title = title_element.text
-        link = title_element.get_attribute('href')
-        company = vac.find_element(By.CSS_SELECTOR, 'span[data-qa="vacancy-serp__vacancy-employer-text"]').text
-        try:
-            salary = vac.find_element(By.CSS_SELECTOR, 'div.compensation-labels--vwum2s12fQUurc2J').find_element(By.CSS_SELECTOR, 'span').text
-        except:
-            salary = 'Не указана'
+        name = svet.find_element(By.CSS_SELECTOR, 'div.lsooF').text
+        price = svet.find_element(By.CSS_SELECTOR, 'div.q5Uds').text
+        url = svet.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
     except Exception as e:
         print(f'Произошла ошибка при парсинге: {e}')
         continue
-    parsed_data.append([title, company, salary, link])
+    parsed_data.append([name, price, url])
 
 driver.quit()
 
-with open('hh.csv', 'w', newline='', encoding='utf-8') as file:
+with open('svet.csv', 'w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
-    writer.writerow(['Название вакансии', 'Название компании', 'Зарплата', 'Ссылка на вакансию'])
+    writer.writerow(['Название', 'Цена', 'Ссылка'])
     writer.writerows(parsed_data)
-
-
-
-
