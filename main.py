@@ -7,17 +7,18 @@ driver = webdriver.Firefox()
 
 url = 'https://www.divan.ru/ekaterinburg/category/svet'
 driver.get(url)
-time.sleep(3)
+time.sleep(1)
 
 parsed_data = []
 
-svetis = driver.find_elements(By.CLASS_NAME, 'div.LlPhw')
+svetis = driver.find_elements(By.CSS_SELECTOR, 'div.lsooF')
 
 for svet in svetis:
     try:
-        name = svet.find_element(By.CSS_SELECTOR, 'div.lsooF').text
-        price = svet.find_element(By.CSS_SELECTOR, 'div.q5Uds').text
+        name = svet.find_element(By.CSS_SELECTOR, 'a').text
         url = svet.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+        price = svet.find_element(By.CSS_SELECTOR, 'span.KIkOH').text
+
     except Exception as e:
         print(f'Произошла ошибка при парсинге: {e}')
         continue
